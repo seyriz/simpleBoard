@@ -56,8 +56,12 @@ class post(Base):
         self.writer = writer
         self.writeTime = writeTime
         self.files = files
-    def getPostList(start, limit=20):
-        return self.query.filter_by()
+    
+    def getPostList(offset=int(), limit=20):
+        return post.query.offset(offset).limit(limit).all()
+
+    def getPost(page):
+        return post.query.filter_by(postSrl=page).first()
 
 class comment(Base):
     __tablename__ = 'comment'
@@ -100,3 +104,7 @@ class files(Base):
             temp = {'fileSrl': item[0], 'post': item[1], 'fileName': item[2], 'fileUploaded': item[3], 'fileExtention': item[4], 'fileSaved': item[5]}
             entry.appent(temp)
         return entry
+
+    def getLatestFile():
+        latestFile = file.query.limit(1).first()
+        return latestFile.fileSrl

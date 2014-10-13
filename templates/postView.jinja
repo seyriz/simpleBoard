@@ -1,56 +1,67 @@
 {% extends 'layout.jinja' %}
 {% block contents %}
-    <table>
-        <thead>
-            <th>
-                <p>제목 : {{ entries['postTitle'] }}</p>
-            </th>
-            <th>
-                <p>작성자 : {{ entries['postWriter'] }}</p>
-            </th>
-            <th>
-                <p>작성 시간 :{{ entries['postWriteTime'] }}</p>
-            </th>
-
-        </thead>
-        <tbody>
-            <tr>
-                <span>
-                    {{ entries['postText'] }}
-                </span>
-            </tr>
-        </tbody>
-    </table>
-    {% for item in entries.comments %}
-        <table>
-            <thead>
-                <th>
-                    <p>
-                        {{item['commentWriter'] }}
-                    </p>
-                </th>
-                <th>
-                    <p>
-                        {{item['commnetWriteTime'] }}
-                    </p>
-                </th>
-            </thead>
-            <tbody>
-                <tr>
-                    <span>
-                        {{ item['comment'] }}
-                    </span>
-                </tr>                
-            </tbody>
-        </table>
-    {% endfor %}
-    <div class="input-group">
-        <form role="form" action="/newcomment" method="post">
-            <div class="form-group">
-                <textarea name="commentInput"></textarea>
+    {% if session.logged_in %}
+        <div class="pull-right">
+            <a href="/post/write"class="btn btn-danger" role="button">Write</a>
+        </div>
+    {% endif %}
+    <div class="panel-group" id="accordion">
+        {% if(not viewPostPrev==None) %}
+            {% for item in viewPostPrev %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a href="/post/{{ item['postSrl']}}">
+                                <p class="text-left">{{ item['postTitle'] }}</p>
+                                <p class="text-right">{{ item['postWriten'] }} by {{ item['postWiter'] }}</p>
+                            </a>
+                        </h4>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" id="nowView" href="/post/{{ viewPost['postSrl']}}">
+                        <p class="text-left">{{ viewPost['postTitle'] }}</p>
+                        <small class="pull-right col-sm-4">{{ viewPost['postWriten'] }} by {{ viewPost['postWiter'] }}</small>
+                    </a>
+                </h4>
             </div>
-            <button type="submit" class="btn btn-success">Submit</button>
-            <button type="reset" class="btn btn-danger">Reset</button>
-        </form>
-    </div>
+            <div id="collapseOne" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    {{ viewPost['postText']}}
+                </div>
+            </div>
+        </div>
+        {% if(not viewPostNext==None) %}
+            {% for item in viewPostNext %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a href="/post/{{ item['postSrl']}}">
+                                <p class="text-left">{{ item['postTitle'] }}</p>
+                                <p class="text-right">{{ item['postWriten'] }} by {{ item['postWiter'] }}</p>
+                            </a>
+                        </h4>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <script type="text/javascript">
+            $(document).ready(function(){function (e) {
+                    e.preventDefault();
+
+                    var target = document.getElementById('nowView').hash;
+                    $target = $(target);
+
+                    $('html, body').stop().animate({
+                        'scrollTop': $target.offset().top
+                    }, 900, 'swing', function () {
+                        window.location.hash = target;
+                    });
+                });
+            });
+        </script>
 {% endblock %}

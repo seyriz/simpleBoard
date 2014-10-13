@@ -1,7 +1,7 @@
 {% extends 'layout.jinja' %}
 {% block contents %}
     <div class="input-group">
-        <form role="form" action="/join" method="post">
+        <form role="form" action="{{ url_for('joinUser')}}" method="post">
             
             <div class="form-group">
                 <label for="E-mail">Email address</label>
