@@ -1,0 +1,25 @@
+{% extends 'layout.jinja' %}
+{% block contents %}
+    <table>
+        <thead>
+            <th>
+                <p>번호</p>
+            </th>
+            <th>
+                <p>제목</p>
+            </th>
+            <th>
+                <p>작성자</p>
+            </th>
+        </thead>
+        <tbody class="table table-hover table-condensed">
+            {% for item in entries %}
+                <tr>
+                    <td>{{item['postSrl']}}</td>
+                    <td><a href="/post/{{item['postSrl']}}">{{item['postTitle']}}</a></td>
+                    <td>{{item['postWriter']}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

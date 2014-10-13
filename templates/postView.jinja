@@ -1,0 +1,56 @@
+{% extends 'layout.jinja' %}
+{% block contents %}
+    <table>
+        <thead>
+            <th>
+                <p>제목 : {{ entries['postTitle'] }}</p>
+            </th>
+            <th>
+                <p>작성자 : {{ entries['postWriter'] }}</p>
+            </th>
+            <th>
+                <p>작성 시간 :{{ entries['postWriteTime'] }}</p>
+            </th>
+
+        </thead>
+        <tbody>
+            <tr>
+                <span>
+                    {{ entries['postText'] }}
+                </span>
+            </tr>
+        </tbody>
+    </table>
+    {% for item in entries.comments %}
+        <table>
+            <thead>
+                <th>
+                    <p>
+                        {{item['commentWriter'] }}
+                    </p>
+                </th>
+                <th>
+                    <p>
+                        {{item['commnetWriteTime'] }}
+                    </p>
+                </th>
+            </thead>
+            <tbody>
+                <tr>
+                    <span>
+                        {{ item['comment'] }}
+                    </span>
+                </tr>                
+            </tbody>
+        </table>
+    {% endfor %}
+    <div class="input-group">
+        <form role="form" action="/newcomment" method="post">
+            <div class="form-group">
+                <textarea name="commentInput"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+            <button type="reset" class="btn btn-danger">Reset</button>
+        </form>
+    </div>
+{% endblock %}
