@@ -61,8 +61,9 @@ class post(Base):
     writer = Column(Integer, nullable=False)
     writeTime = Column(Integer, nullable=False)
     commantCount = Column(Integer, nullable=False)
+    files = Column(String)
 
-    def __init__(self, title=str(), text=str(), writer=str(), writeTime=int(), boardname=str()):
+    def __init__(self, title=str(), text=str(), writer=str(), writeTime=int(), boardname=str(), files=str()):
         boardSrl = board.getBoardSrl(boardname=boardname)
         self.board = boardSrl
         self.title = title
@@ -70,6 +71,7 @@ class post(Base):
         self.writer = writer
         self.writeTime = writeTime
         self.commantCount = 0
+        self.files = files
     
     def getPostList(limit=20, boardname=str()):
         boardSrl = board.getBoardSrl(boardname=boardname)

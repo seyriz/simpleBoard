@@ -1,5 +1,36 @@
 {% extends 'layout.jinja' %}
 {% block contents %}
+
+    {% if postList == [] %}
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#void">
+                            <span class="boardTitle">
+                                <p class="text-left">텅 빈 게시판</p>
+                            </span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="void" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div class="well">로그인 후 글을 써 주세요!</div>
+                        <div class="row">
+                        </div>
+                        <div class="comment">
+                                <div class="well well-sm ">
+                                    <label for="Comment">Comment()by 생성자</label>
+                                    <span>
+                                        텅 빈 글입니다.
+                                    </span>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
     {% for viewPost in postList %}
         <div class="panel-group" id="accordion">
             <div class="panel panel-info">
@@ -15,6 +46,15 @@
                 <div id="{{viewPost['postSrl'] }}" class="panel-collapse collapse">
                     <div class="panel-body">
                         <div class="well">{{ viewPost['postText']}}</div>
+                        <div class="row">
+                            {% for file in viewPost['fileList']['files'] %}
+                                    <div class="col-sm-6 col-md-3">
+                                        <a href="{{ url_for('static', filename='files/{}/{}'.format(viewPost['fileList']['uuid'], file))}}" class="thumbnail" target="_blank"> 
+                                            <img data-src="holder.js/100%x180" src="{{ url_for('static', filename='files/{}/{}'.format(viewPost['fileList']['uuid'], file))}}" class="thumbnail" alt="{{ file }}">
+                                        </a>
+                                    </div>
+                            {% endfor %}
+                        </div>
                         <div class="comment">
                             {% for temp in viewPost.comments %}
                                 <div class="well well-sm ">
@@ -27,8 +67,8 @@
                             {% if session.logged_in %}
                                 <form role="form"action="{{url_for('simpleBBS.commentWrite',postSrl=viewPost.get('postSrl'))}}" method="post"enctype="multipart/form-data">
                                     <div class="form-group">
-                                        <label for="Comment">Comment</label>
-                                        <textarea class="form-control" id="Comment" name="Comment" rows="10"></textarea>
+                                        <label class="well well-sm" for="Comment">Comment</label>
+                                        <textarea class="form-control" id="Comment" name="Comment" rows="5"></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-success">Submit</button>
                                     <button type="reset" class="btn btn-danger">Reset</button>
@@ -40,4 +80,5 @@
             </div>
         </div>
     {% endfor %}
+    {% endif %}
 {% endblock %}

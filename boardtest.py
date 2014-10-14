@@ -14,7 +14,7 @@ class testBoard:
     @testBoard.route('/new')
     def newPost():
         if(not session.get('logged_in')==None):
-            return render_template('postWrite.jinja', getboard='testBoard')
+            return render_template('postWrite.jinja', getboard='testBoard',isWrite=True)
         else:
             flash('You have not perm')
             return redirect(url_for('index'))

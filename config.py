@@ -8,6 +8,6 @@ class defaultconfig:
     ADMIN_PASSWORD = 'default'
     DATABASE_TYPE = 'sqlite3'
     DATABASE_ADD = 'BoardDB.sqlite3'
-    UPLOAD_FOLDER = 'files'
+    UPLOAD_FOLDER = 'static/files'
     ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'bmp'])
     USING_BOARDS = ('portfolio','testBoard')

@@ -18,7 +18,7 @@ from simpleBoard import simpleBoard
 from Account import accountModule
 from portfolio import portfolio
 from boardtest import testBoard
-
+from uploader import fileUploader
 
 class server:
     app = Flask(__name__)
@@ -27,6 +27,7 @@ class server:
     app.register_blueprint(accountModule.accountModule, url_prefix='/account')
     app.register_blueprint(portfolio.portfolio)
     app.register_blueprint(testBoard.testBoard, url_prefix='/test')
+    app.register_blueprint(fileUploader.fileOp, url_prefix='/files')
 
     @app.teardown_request
     def shutdown_session(exception=None):
@@ -35,6 +36,8 @@ class server:
     @app.route('/')
     def index():
         return redirect(url_for('portfolio.index'))
+
+    
 
     if(__name__=='__main__'):
         if(not os.path.exists(defaultconfig.DATABASE_ADD)):

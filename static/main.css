@@ -4,12 +4,29 @@ body {
 table{
     width: 100%;
 }
-
+img{
+    width: 100% !important;
+    height: 100% !important;
+}
 .boardTitle{
     position: relative !important;
     
 }
 
-.PostText{
+.thumbnail{
+    width: 100%;
+    height: 180px;
+}
 
+.form-group{
+    padding-top: 20px;
+}
+
+.btn-group{
+    padding-top: 0.5em !important;
+    padding-right: 10px !important;
+}
+
+.login{
+    padding-top: 0 !important;
 }
