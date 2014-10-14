@@ -70,13 +70,63 @@ class simpleBoard:
             flash('Invalid user account!')
             return redirect(request.referrer)
 
-    @simpleBBS.route('/commentWrite/<postSrl>', methods=['POST'])
-    def commentWrite(postSrl):
+    @simpleBBS.route('/removePost/<int:postSrl>', methods=['POST'])
+    def removePost(postSrl):
+        print('here?')
+        if(request.method=='POST'):
+            print('start remove')
+            postInfo = post.query.get(postSrl)
+            print(postInfo)
+            if(session.get('userName')==postInfo.writer):
+                try:
+                    print(1)
+                    db_session.delete(postInfo)
+                    db_session.commit()
+                    print(2)
+                    return redirect(request.referrer)
+                except Exception as e:
+                    print(e)
+                    flash('Error! ' + e)
+                    return redirect(request.referrer)
+            else:
+                flash('You have not perm')
+                return redirect(url_for('app.index'))
+        else:
+            flash('Invalid access')
+            return redirect(url_for('app.index'))
+
+    @simpleBBS.route('/modifyPost/<int:postSrl>', methods=['GET','POST'])
+    def modifiPost(postSrl=int()):
+        if(not postSrl==None):
+            if(request.method=='POST'):
+                try:
+                    postInfo = post.query.get(postSrl)
+                    title, text
+                    postInfo.title = request.form['Title']
+                    postInfo.text = request.form['Text']
+                    db_session.add(postInfo)
+                    db_session.commit()
+                except Exception as e:
+                    print(e)
+                    flash('Error! ' + e)
+                    return redirect(request.referrer)
+            else:
+                postInfo = post.query.get(postSrl)
+                return render_template('postModify.jinja', postSrl=postSrl, postTitle=postInfo.title, postText=postInfo.text)
+        else:
+            flash('Invalid access')
+            return redirect(url_for('app.index'))
+
+
+
+    @simpleBBS.route('/commentWrite/', methods=['POST'])
+    def commentWrite():
         if(request.method=='POST'):
             if(not session.get('logged_in')==None):
                 try:
                     getComment = request.form['Comment']
                     getWriter = session['userName']
+                    postSrl = request.form['postSrl']
                     now = time.time()
                     newComment = comment(post=postSrl, comment=getComment, writer=getWriter, writeTime=now)
                     posts = post.query.get(postSrl)
