@@ -10,10 +10,21 @@
         <label for="exampleInputPassword1">Text(MarkDown Suported)</label>
         <textarea class="form-control" id="Text" name="Text" rows="10"></textarea>
     </div>
-    <!-- <div class="form-group">
-        <label for="exampleInputFile">File input</label>
-        <input type="file" id="files" name="files" />
-    </div> -->
+    <strong>Files:</strong><br>
+    Select files OR drag them into the box below.
+    <input id="file-picker" type="file" name="file" accept="image/*" multiple><p>
+
+    <div id="dropbox"  style="border=1">
+        Drag and Drop Files Here
+    </div><p>
+
+    <fieldset id="progress" style="display: none">
+        <legend>Files Progress</legend>
+
+        <div class="progress-trough">
+            <div id="progress-bar" class="progress-bar">0%</div>
+        </div>
+    </fieldset><p>
     <button type="submit" class="btn btn-success">Submit</button>
     <button type="reset" class="btn btn-danger">Reset</button>
 </form>

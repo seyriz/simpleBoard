@@ -19,7 +19,7 @@ class portfolio:
     @portfolio.route('/portfolio/new')
     def newPost():
         if(not session.get('logged_in')==None):
-            return render_template('postWrite.jinja', getboard='portfolio')
+            return render_template('postWrite.jinja', getboard='portfolio' , isWrite=True)
         else:
             flash('You have not perm')
             return redirect(url_for('index'))

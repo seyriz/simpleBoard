@@ -1,7 +1,8 @@
 from flask import *
 from models import *
+from uploader import *
 from DB import db_session
-import time, os, misaka, random
+import time, os, misaka, random, json
 class simpleBoard:
     
 
@@ -26,12 +27,18 @@ class simpleBoard:
                     commentR = misaka.html(commentTemp.comment)
                     temp = {'commentWriter': commentTemp.writer, 'commentWriten': commentWriten, 'comment': commentR}
                     comments.append(temp)
+                serialFileSrlList = getPost.files
+                fileDict = fileUploader.serving(getPost.files)
                 viewPost = {'postSrl': getPost.postSrl, 'postTitle': getPost.title, 'postText': rendered, \
                 'postWriter': getPost.writer, 'postWriten': writen, \
                 'board': getPost.board , 'commentCount': getPost.commantCount,\
-                'comments': comments}
+                'comments': comments, 'fileList': fileDict}
+                print(viewPost)
                 postList.append(viewPost)
-        return render_template('postView.jinja', postList=postList, isBoard=True, getBoard=args.get('board'))
+            print(postList)
+            postList.reverse()
+            print(postList)
+            return render_template('postView.jinja', postList=postList, isBoard=True, getBoard=args.get('board'))
 
     @simpleBBS.route('/write', methods = ['POST'])
     def postWrite():
@@ -43,12 +50,16 @@ class simpleBoard:
                     newText = request.form['Text']
                     Writer = session['userName']
                     writeTime = int(time.time())
-                    print(board)
-                    newPost = post(title=newTitle, text=newText, writer=Writer, writeTime=str(writeTime), boardname=board)
+                    files=request.files.getlist("file")
+                    for file in files:
+                        print(files)
+                    fileUUID = fileUploader.upload(files=files)
+                    newPost = post(title=newTitle, text=newText, writer=Writer, writeTime=str(writeTime), boardname=board, files=fileUUID)
                     db_session.add(newPost)
                     db_session.commit()
                 except Exception as e:
                     print(e)
+                    flash(e)
                     return redirect(request.referrer)
                 finally:
                     return redirect(url_for(endpoint=board+'.index'))
@@ -140,22 +151,3 @@ class simpleBoard:
         else:
             flash('You have not perm')
             return redirect(url_for('index'))
-
-
-    # def allowed_file(filename):
-    #     return ('.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS)
-
-    # def uploadFile(file):
-    #     if(request.method == 'POST'):
-    #         if file and allowed_file(file.filename):
-    #             nowTime = int(time.time())
-    #             filename = secure_filename(file.filename)
-    #             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    #             fileUp = files(fileName=file.fileName, fileUploaded= str(nowTime), fileExtention=file.fileName.split('.')['-1'], fileSaved=secure_filename(file.fileName))
-    #             print('fileUp : ' + fileUp)
-    #             db_session.add(fileUp)
-    #             db_session.commit
-
-    # @simpleBBS.route('/uploads/<filename>')
-    # def sendFile(filename):
-    #     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
