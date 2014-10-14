@@ -1,7 +1,7 @@
 {% extends 'layout.jinja' %}
 {% block contents %}
     <div class="input-group">
-        <form role="form" action="{{ url_for('joinUser')}}" method="post">
+        <form role="form" action="{{ url_for('account.joinUser')}}" method="post">
             
             <div class="form-group">
                 <label for="E-mail">Email address</label>
@@ -9,15 +9,11 @@
             </div>
             <div class="form-group">
                 <label for="name">Your name</label>
-                <input type="input" class="form-control" id="name" name="name" placeholder="Enter email">
+                <input type="input" class="form-control" id="name" name="name" placeholder="Enter name">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" class="form-control" id="Password" name="Password" placeholder="Password">
-            </div>
-            <div class="form-group">
-                <label for="password">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm" name="confirm" placeholder=" Comfirm Password" onfocus="pass">
             </div>
             <button type="submit" class="btn btn-success">Submit</button>
             <button type="reset" class="btn btn-danger">Reset</button>

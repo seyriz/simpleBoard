@@ -1,6 +1,7 @@
 from flask import *
 from models import *
 from DB import db_session
+from config import defaultconfig
 import hashlib
 class accountModule:
     
@@ -20,8 +21,7 @@ class accountModule:
                 return redirect(url_for('index'))
             try:
                 email = request.form['email']
-                if(not account.validEmail(email = email)):
-                    print('fail to valid')
+                if(not account.validEmail(email=email)):
                     flash('Already exist E-Mail')
                     return render_template('join.jinja')
                 userPass = request.form['Password']
@@ -31,6 +31,13 @@ class accountModule:
                 newuser = account(email=email, name=userName, passwd=userPass)
                 db_session.add(newuser)
                 db_session.commit()
+                userInfo = account.getUserInfo(email=email)
+                if(not userInfo):
+                    return render_template('join.jinja')
+                session['logged_in'] = True
+                session['userSrl'] = userInfo.userSrl
+                session['userName'] = userInfo.name
+                session['userMail'] = userInfo.email
                 flash('Wellcome '+userName+'!')
             except Exception as e:
                 print(e)
@@ -38,17 +45,24 @@ class accountModule:
                 return redirect(url_for('index'))
     @accountModule.route('/leave', methods = ['POST', 'GET'])
     def leave():
-        if(session['logged_in']):
-            user = account.getUserInfo(email=session['userMail'])
-            db_session.delete(user)
-            db_session.commit()
-            session.pop('logged_in', None)
-            session.pop('userSrl', None)
-            session.pop('userName', None)
-            session.pop('userMail', None)
-            print('point : 2')
-            flash('Good bye!')
-            return redirect(url_for('index'))
+        if(not session.get('logged_in')==None):
+            try:
+                user = account.getUserInfo(email=session['userMail'])
+                db_session.delete(user)
+                db_session.commit()
+                session.pop('logged_in', None)
+                session.pop('userSrl', None)
+                session.pop('userName', None)
+                session.pop('userMail', None)
+                flash('Good bye!')
+                return redirect(url_for('index'))
+            except:
+                flash('Invalid Access')
+                session.pop('logged_in', None)
+                session.pop('userSrl', None)
+                session.pop('userName', None)
+                session.pop('userMail', None)
+                return redirect(url_for('index'))
         else:
             flash('Invalid Access')
             return redirect(url_for('index'))
@@ -67,8 +81,6 @@ class accountModule:
                 session['userSrl'] = userInfo.userSrl
                 session['userName'] = userInfo.name
                 session['userMail'] = userInfo.email
-                print(session)
-                print(session['logged_in'])
                 flash('Hello! '+session['userName'])
                 return redirect(request.referrer)
             else:

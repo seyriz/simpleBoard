@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from DB import Base
+from DB import *
 
 class account(Base):
     __tablename__ = 'account'
@@ -10,11 +10,11 @@ class account(Base):
     email = Column(String(200), nullable=False)
 
     def __init__(self, email=str(), name=str(), passwd=str()):
-        self.passwd = passwd
-        self.name = name
-        self.email = email
+            self.passwd = passwd
+            self.name = name
+            self.email = email
 
-    def validEmail(email=None):
+    def validEmail(email=str()):
         print('E-mail valid')
         validEmail = account.query.filter_by(email = email).first()
         if(validEmail is None):
@@ -31,37 +31,53 @@ class account(Base):
         elif(getUser.email==email and getUser.passwd==passwd):
             return True
         else:
-            False
+            return False
     
     def getUserInfo(email=str()):
         userInfo = account.query.filter_by(email=email).first()
         return userInfo
     def updatePW(old, new):
         return False
+class board(Base):
+    __tablename__ = 'boards'
 
+    boardSrl = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    board = Column(String)
+
+    def __init__(self, board=str()):
+        self.board = board
+
+    def getBoardSrl(boardname=str()):
+        qr = board.query.filter_by(board = boardname).first()
+        return qr.boardSrl
 
 class post(Base):
     __tablename__ = 'posts'
 
     postSrl = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    board = Column(Integer, nullable=False)
     title = Column(String(200), nullable=False)
     text = Column(String(2000), nullable=False)
     writer = Column(Integer, nullable=False)
     writeTime = Column(Integer, nullable=False)
-    files = Column(String)
+    commantCount = Column(Integer, nullable=False)
 
-    def __init__(self, title=str(), text=str(), writer=str(), writeTime=int(), files=None):
+    def __init__(self, title=str(), text=str(), writer=str(), writeTime=int(), boardname=str()):
+        boardSrl = board.getBoardSrl(boardname=boardname)
+        self.board = boardSrl
         self.title = title
         self.text = text
         self.writer = writer
         self.writeTime = writeTime
-        self.files = files
+        self.commantCount = 0
     
-    def getPostList(offset=int(), limit=20):
-        return post.query.offset(offset).limit(limit).all()
+    def getPostList(limit=20, boardname=str()):
+        boardSrl = board.getBoardSrl(boardname=boardname)
+        return post.query.filter_by(board=boardSrl).limit(limit).all()
 
-    def getPost(page):
-        return post.query.filter_by(postSrl=page).first()
+    def getPost(page=int(), board=int()):
+        boardSrl = board.getBoardSrl(board)
+        return post.query.filter_by(board=boardSrl).filter_by(postSrl=page).first()
 
 class comment(Base):
     __tablename__ = 'comment'
@@ -80,31 +96,3 @@ class comment(Base):
 
     def getComment(post):
         return comment.query.filter_by(post = post).order_by(comment.commentSrl).all()
-
-class files(Base):
-    __tablename__ = 'files'
-
-    fileSrl = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    fileName = Column(String(500), nullable=False)
-    fileUploaded = Column(Integer, nullable=False)
-    fileExtention = Column(String(10), nullable=False)
-    fileSaved = Column(String(10000), nullable=False)
-
-    def __init__(self, fileName=str(), fileUploaded=int(), fileExtention=str(), fileSaved=str()):
-        self.post = post
-        self.fileName = fileName
-        self.fileUploaded = fileUploaded
-        self.fileExtention = fileExtention
-        self.fileSaved = fileSaved
-
-    def getFileLoc(fileSrl):
-        fileList = files.query.filter_by(fileSrl = fileSrl).first()
-        entry = list()
-        for item in fileList:
-            temp = {'fileSrl': item[0], 'post': item[1], 'fileName': item[2], 'fileUploaded': item[3], 'fileExtention': item[4], 'fileSaved': item[5]}
-            entry.appent(temp)
-        return entry
-
-    def getLatestFile():
-        latestFile = file.query.limit(1).first()
-        return latestFile.fileSrl

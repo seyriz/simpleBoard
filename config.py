@@ -10,3 +10,4 @@ class defaultconfig:
     DATABASE_ADD = 'BoardDB.sqlite3'
     UPLOAD_FOLDER = 'files'
     ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'bmp'])
+    USING_BOARDS = ('portfolio','testBoard')
