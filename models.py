@@ -60,7 +60,7 @@ class post(Base):
     text = Column(String(2000), nullable=False)
     writer = Column(Integer, nullable=False)
     writeTime = Column(Integer, nullable=False)
-    commantCount = Column(Integer, nullable=False)
+    commentCount = Column(Integer, nullable=False)
     files = Column(String)
 
     def __init__(self, title=str(), text=str(), writer=str(), writeTime=int(), boardname=str(), files=str()):
@@ -70,7 +70,7 @@ class post(Base):
         self.text = text
         self.writer = writer
         self.writeTime = writeTime
-        self.commantCount = 0
+        self.commentCount = 0
         self.files = files
     
     def getPostList(limit=20, boardname=str()):
@@ -97,3 +97,6 @@ class comment(Base):
 
     def getComment(post):
         return comment.query.filter_by(post = post).order_by(comment.commentSrl).all()
+
+    def getCommentOnce(commentSrl):
+        return comment.query.get(commentSrl)

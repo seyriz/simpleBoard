@@ -2,7 +2,7 @@ from flask import *
 from models import *
 from uploader import *
 from DB import db_session
-import time, os, misaka, random, json
+import time, os, misaka, random, json, shutil
 class simpleBoard:
     
 
@@ -25,19 +25,16 @@ class simpleBoard:
                     ct = time.localtime(commentTemp.writeTime)
                     commentWriten = str(ct[1])+'월'+str(ct[2])+'일 '+str(ct[3])+':'+str(ct[4])
                     commentR = misaka.html(commentTemp.comment)
-                    temp = {'commentWriter': commentTemp.writer, 'commentWriten': commentWriten, 'comment': commentR}
+                    temp = {'commentWriter': commentTemp.writer, 'commentWriten': commentWriten, 'comment': commentR, 'commentSrl': commentTemp.commentSrl}
                     comments.append(temp)
                 serialFileSrlList = getPost.files
                 fileDict = fileUploader.serving(getPost.files)
                 viewPost = {'postSrl': getPost.postSrl, 'postTitle': getPost.title, 'postText': rendered, \
                 'postWriter': getPost.writer, 'postWriten': writen, \
-                'board': getPost.board , 'commentCount': getPost.commantCount,\
+                'board': getPost.board , 'commentCount': getPost.commentCount,\
                 'comments': comments, 'fileList': fileDict}
-                print(viewPost)
                 postList.append(viewPost)
-            print(postList)
             postList.reverse()
-            print(postList)
             return render_template('postView.jinja', postList=postList, isBoard=True, getBoard=args.get('board'))
 
     @simpleBBS.route('/write', methods = ['POST'])
@@ -75,11 +72,11 @@ class simpleBoard:
         postInfo = post.getPost(postSrl)
         if(not session.get('logged_in')==None and session.get('userName')==postInfo.writer):
             try:
-                print('Hi')
                 postName = postInfo.title
+                postFiles = postInfo.files
+                shutil.rmtree(defaultconfig.UPLOAD_FOLDER+'/'+postFiles)
                 db_session.delete(postInfo)
                 db_session.commit()
-                print('Commited!')
                 flash('Deleted ' + postName + '!')
                 return redirect(request.referrer)
             except Exception as e:
@@ -101,7 +98,7 @@ class simpleBoard:
                     now = time.time()
                     newComment = comment(post=postSrl, comment=getComment, writer=getWriter, writeTime=now)
                     posts = post.query.get(postSrl)
-                    posts.commantCount += 1
+                    posts.commentCount += 1
                     db_session.add(posts)
                     db_session.add(newComment)
                     db_session.commit()
@@ -116,6 +113,33 @@ class simpleBoard:
             flash('You have not perm')
             return redirect(url_for('index'))
 
+    @simpleBBS.route('/commentDelete/<int:commentSrl>')
+    def commentDelete(commentSrl):
+        print(str(commentSrl)+'!')
+        commentInfo = comment.getCommentOnce(commentSrl)
+        if(not session.get('logged_in')==None and session.get('userName')==commentInfo.writer):
+            try:
+                print('in')
+                commentPost = commentInfo.post
+                print(1)
+                db_session.delete(commentInfo)
+                print(2)
+                postInfo = post.query.get(commentPost)
+                print(3)
+                postInfo.commentCount -= 1
+                print(4)
+                db_session.add(postInfo)
+                print(5)
+                db_session.commit()
+                flash('Deleted!')
+                return redirect(request.referrer)
+            except Exception as e:
+                print(e)
+                flash("Error! : " + str(e))
+                return redirect(request.referrer)
+        else:
+            flash('Invalid access!')
+            return redirect(url_for('app.index'))
 
     @simpleBBS.route('/testB/<int:seed>/<int:count>')
     def rendPost(seed,count=100):
