@@ -46,11 +46,7 @@
                 <div id="{{viewPost['postSrl'] }}" class="panel-collapse collapse">
                     <div class="panel-body">
                         <div class="well">
-                            {{ viewPost['postText']}}
-                            <div class="bnt-group">
-                                <a href="#" class="btn btn-danger">Delete</a>
-                                <a href="#" class="btn btn-warning">Modify</a>
-                            </div>
+                            {{ viewPost['postText']|safe }}
                         </div>
                         <div class="row">
                             {% for file in viewPost['fileList']['files'] %}
@@ -71,9 +67,13 @@
                                 </div>
                             {% endfor %}
                             {% if session.logged_in %}
-                                <form role="form"action="{{url_for('simpleBBS.commentWrite'}}" method="post"enctype="multipart/form-data">
+                                <form role="form"action="{{url_for('simpleBBS.commentWrite')}}" method="post"enctype="multipart/form-data">
                                     <div class="form-group">
                                         <label class="well well-sm" for="Comment">Comment</label>
+                                        <div class="btn-group pull-right">
+                                            <a href="{{url_for('simpleBBS.deletePost', postSrl=viewPost['postSrl'])}}" class="btn btn-danger">Delete Post</a>
+                                            <a href="#" class="btn btn-warning">Modify Post</a>
+                                        </div>
                                         <input type="hidden" name="postSrl" value="{{viewPost['postSrl']}}" />
                                         <textarea class="form-control" id="Comment" name="Comment" rows="5"></textarea>
                                     </div>

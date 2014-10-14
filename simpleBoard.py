@@ -70,6 +70,26 @@ class simpleBoard:
             flash('Invalid user account!')
             return redirect(request.referrer)
 
+    @simpleBBS.route('/deletePost/<int:postSrl>')
+    def deletePost(postSrl):
+        postInfo = post.getPost(postSrl)
+        if(not session.get('logged_in')==None and session.get('userName')==postInfo.writer):
+            try:
+                print('Hi')
+                postName = postInfo.title
+                db_session.delete(postInfo)
+                db_session.commit()
+                print('Commited!')
+                flash('Deleted ' + postName + '!')
+                return redirect(request.referrer)
+            except Exception as e:
+                print(e)
+                flash("Error! : " + str(e))
+                return redirect(request.referrer)
+        else:
+            flash('Invalid access!')
+            return redirect(url_for('app.index'))
+
     @simpleBBS.route('/commentWrite/', methods=['POST'])
     def commentWrite():
         if(request.method=='POST'):

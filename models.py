@@ -77,9 +77,8 @@ class post(Base):
         boardSrl = board.getBoardSrl(boardname=boardname)
         return post.query.filter_by(board=boardSrl).limit(limit).all()
 
-    def getPost(page=int(), board=int()):
-        boardSrl = board.getBoardSrl(board)
-        return post.query.filter_by(board=boardSrl).filter_by(postSrl=page).first()
+    def getPost(page=int()):
+        return post.query.get(page)
 
 class comment(Base):
     __tablename__ = 'comment'
