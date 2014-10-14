@@ -38,6 +38,7 @@ class account(Base):
         return userInfo
     def updatePW(old, new):
         return False
+        
 class board(Base):
     __tablename__ = 'boards'
 

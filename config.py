@@ -1,3 +1,4 @@
+import datetime
 class defaultconfig:
     """docstring for defaultconfig"""
     DEBUG = True
@@ -11,3 +12,4 @@ class defaultconfig:
     UPLOAD_FOLDER = 'static/files'
     ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'bmp'])
     USING_BOARDS = ('portfolio','testBoard')
+    PERMANENT_SESSION_LIFETIME = datetime.timedelta(minutes=30)

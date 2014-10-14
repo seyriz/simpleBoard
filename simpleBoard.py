@@ -11,7 +11,7 @@ class simpleBoard:
     @simpleBBS.route('/<args>')
     def postRead(args=dict()):
         getPostList = post.getPostList(boardname=args.get('board'))
-        if(getPostList == None):
+        if(getPostList is None):
             viewPost = {'postSrl': 'getPost.postSrl', 'postTitle': 'getPost.title', 'postText': 'getPost.text', 'postWriter': 'getPost.writer', 'postWriten': 'getPost.writeTime', 'files': 'getPost.files'}
         else:
             postList = list()
@@ -27,7 +27,6 @@ class simpleBoard:
                     commentR = misaka.html(commentTemp.comment)
                     temp = {'commentWriter': commentTemp.writer, 'commentWriten': commentWriten, 'comment': commentR, 'commentSrl': commentTemp.commentSrl}
                     comments.append(temp)
-                serialFileSrlList = getPost.files
                 fileDict = fileUploader.serving(getPost.files)
                 viewPost = {'postSrl': getPost.postSrl, 'postTitle': getPost.title, 'postText': rendered, \
                 'postWriter': getPost.writer, 'postWriten': writen, \
@@ -37,10 +36,10 @@ class simpleBoard:
             postList.reverse()
             return render_template('postView.jinja', postList=postList, isBoard=True, getBoard=args.get('board'))
 
-    @simpleBBS.route('/write', methods = ['POST'])
+    @simpleBBS.route('/write', methods=['POST'])
     def postWrite():
-        if(request.method=='POST'):
-            if(not session.get('logged_in')==None):
+        if(request.method == 'POST'):
+            if(not session.get('logged_in') is None):
                 try:
                     board = request.form['board']
                     newTitle = request.form['Title']
@@ -70,7 +69,7 @@ class simpleBoard:
     @simpleBBS.route('/deletePost/<int:postSrl>')
     def deletePost(postSrl):
         postInfo = post.getPost(postSrl)
-        if(not session.get('logged_in')==None and session.get('userName')==postInfo.writer):
+        if(not session.get('logged_in') is None and session.get('userName') is postInfo.writer):
             try:
                 postName = postInfo.title
                 postFiles = postInfo.files
@@ -85,12 +84,36 @@ class simpleBoard:
                 return redirect(request.referrer)
         else:
             flash('Invalid access!')
-            return redirect(url_for('app.index'))
+            return redirect(url_for('index'))
+
+    @simpleBBS.route('/modifyPost/<int:postSrl>', methods=['POST', 'GET'])
+    def modifyPost(postSrl):
+        postInfo = post.getPost(postSrl)
+        boardname = board.query.get(post.query.get(postSrl).board).board
+        if(not session.get('logged_in') is None and session.get('userName')==postInfo.writer):
+            if(request.method == 'POST'):
+                try:
+                    postInfo.title = request.form['Title']
+                    print(2)
+                    postInfo.text = request.form['Title']
+                    print(3)
+                    db_session.add(postInfo)
+                    db_session.commit()
+                    return redirect(url_for(boardname+'.index'))
+                except Exception as e:
+                    print(e)
+                    flash("Error! : " + str(e))
+                    return redirect(url_for(boardname+'.index'))
+            else:
+                modiPost = {'Title': postInfo.title, 'postSrl': postSrl, 'Text':postInfo.text}
+                return render_template('postModify.jinja', modiPost=modiPost)
+        flash('Invalid access!')
+        return redirect(url_for('index'))
 
     @simpleBBS.route('/commentWrite/', methods=['POST'])
     def commentWrite():
-        if(request.method=='POST'):
-            if(not session.get('logged_in')==None):
+        if(request.method == 'POST'):
+            if(not session.get('logged_in') is None):
                 try:
                     getComment = request.form['Comment']
                     getWriter = session['userName']
@@ -117,7 +140,7 @@ class simpleBoard:
     def commentDelete(commentSrl):
         print(str(commentSrl)+'!')
         commentInfo = comment.getCommentOnce(commentSrl)
-        if(not session.get('logged_in')==None and session.get('userName')==commentInfo.writer):
+        if(not session.get('logged_in') is None and session.get('userName')==commentInfo.writer):
             try:
                 print('in')
                 commentPost = commentInfo.post
@@ -143,7 +166,7 @@ class simpleBoard:
 
     @simpleBBS.route('/testB/<int:seed>/<int:count>')
     def rendPost(seed,count=100):
-        if(not session.get('logged_in')==None):
+        if(not session.get('logged_in') is None):
             start = time.time()
             for x in range(1,count):
                 time.sleep(0.2)
@@ -155,7 +178,7 @@ class simpleBoard:
                     newText = tempseed2*tempseed
                     Writer = session['userName']
                     writeTime = int(time.time())
-                    newPost = post(title=newTitle, text=newText, writer=Writer, writeTime=str(writeTime),files = None)
+                    newPost = post(title=newTitle, text=newText, writer=Writer, writeTime=str(writeTime),files=None)
                     db_session.add(newPost)
                     db_session.commit()
                 except Exception as e:
@@ -165,11 +188,11 @@ class simpleBoard:
             return "Success"
         else:
             flash('You have not perm')
-            return redirect(url_for('index'))
+            return redirect(url_for('app.index'))
 
     @simpleBBS.route('/testC/<int:seed>/<int:count>')
     def randComment(seed,count=100):
-        if(not session.get('logged_in')==None):
+        if(not session.get('logged_in') is None):
             start = time.time()
             maxPost = 1610
             print(maxPost)

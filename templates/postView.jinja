@@ -76,7 +76,7 @@
                                         {% if session['userName']==viewPost['postWriter'] %}
                                             <div class="btn-group pull-right">
                                                 <a href="{{url_for('simpleBBS.deletePost', postSrl=viewPost['postSrl'])}}" class="btn btn-danger">Delete Post</a>
-                                                <a href="#" class="btn btn-warning">Modify Post</a>
+                                                <a href="{{url_for('simpleBBS.modifyPost', postSrl=viewPost['postSrl'])}}" class="btn btn-warning">Modify Post</a>
                                             </div>
                                         {% endif %}
                                         <input type="hidden" name="postSrl" value="{{viewPost['postSrl']}}" />
