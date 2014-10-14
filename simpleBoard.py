@@ -70,13 +70,14 @@ class simpleBoard:
             flash('Invalid user account!')
             return redirect(request.referrer)
 
-    @simpleBBS.route('/commentWrite/<postSrl>', methods=['POST'])
-    def commentWrite(postSrl):
+    @simpleBBS.route('/commentWrite/', methods=['POST'])
+    def commentWrite():
         if(request.method=='POST'):
             if(not session.get('logged_in')==None):
                 try:
                     getComment = request.form['Comment']
                     getWriter = session['userName']
+                    postSrl = request.form['postSrl']
                     now = time.time()
                     newComment = comment(post=postSrl, comment=getComment, writer=getWriter, writeTime=now)
                     posts = post.query.get(postSrl)
