@@ -12,8 +12,6 @@ from flask import *
 from DB import db_session, init_db
 from models import *
 from config import defaultconfig
-import os, sys, hashlib, datetime, time
-from werkzeug import secure_filename
 from simpleBoard import simpleBoard
 from Account import accountModule
 from portfolio import portfolio

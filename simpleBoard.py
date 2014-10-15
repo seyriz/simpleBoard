@@ -2,7 +2,11 @@ from flask import *
 from models import *
 from uploader import *
 from DB import db_session
-import time, os, misaka, random, json, shutil
+import time
+import misaka
+import random
+import shutil
+
 class simpleBoard:
     
 
@@ -28,10 +32,10 @@ class simpleBoard:
                     temp = {'commentWriter': commentTemp.writer, 'commentWriten': commentWriten, 'comment': commentR, 'commentSrl': commentTemp.commentSrl}
                     comments.append(temp)
                 fileDict = fileUploader.serving(getPost.files)
-                viewPost = {'postSrl': getPost.postSrl, 'postTitle': getPost.title, 'postText': rendered, \
-                'postWriter': getPost.writer, 'postWriten': writen, \
-                'board': getPost.board , 'commentCount': getPost.commentCount,\
-                'comments': comments, 'fileList': fileDict}
+                viewPost = {'postSrl': getPost.postSrl, 'postTitle': getPost.title, 'postText': rendered,\
+                    'postWriter': getPost.writer, 'postWriten': writen,\
+                    'board': getPost.board, 'commentCount': getPost.commentCount,\
+                    'comments': comments, 'fileList': fileDict}
                 postList.append(viewPost)
             postList.reverse()
             return render_template('postView.jinja', postList=postList, isBoard=True, getBoard=args.get('board'))
@@ -188,7 +192,7 @@ class simpleBoard:
             return "Success"
         else:
             flash('You have not perm')
-            return redirect(url_for('app.index'))
+            return redirect(url_for('index'))
 
     @simpleBBS.route('/testC/<int:seed>/<int:count>')
     def randComment(seed,count=100):
