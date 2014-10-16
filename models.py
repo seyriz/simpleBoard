@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from DB import *
+import bcrypt
 
 class account(Base):
     __tablename__ = 'account'
@@ -10,13 +11,13 @@ class account(Base):
     email = Column(String(200), nullable=False)
 
     def __init__(self, email=str(), name=str(), passwd=str()):
-            self.passwd = passwd
+            self.passwd = bcrypt.hashpw(passwd.encode(), bcrypt.gensalt())
             self.name = name
             self.email = email
 
     def validEmail(email=str()):
         print('E-mail valid')
-        validEmail = account.query.filter_by(email = email).first()
+        validEmail = account.query.filter_by(email=email).first()
         if(validEmail is None):
             print('valid Email')
             return True
@@ -25,13 +26,13 @@ class account(Base):
             return False
 
     def getValidLogin(email=None, passwd=None):
-        getUser = account.query.filter_by(email = email).first()
-        if(getUser==None):
-            return False
-        elif(getUser.email==email and getUser.passwd==passwd):
-            return True
+        getUser = account.query.filter_by(email=email).first()
+        PasswdValid = (bcrypt.hashpw(passwd.encode(), getUser.passwd) == getUser.passwd)
+        if(getUser.email==email and PasswdValid):
+            getUser.passwd = None
+            return getUser
         else:
-            return False
+            return None
     
     def getUserInfo(email=str()):
         userInfo = account.query.filter_by(email=email).first()

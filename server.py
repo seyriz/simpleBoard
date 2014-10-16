@@ -17,6 +17,7 @@ from Account import accountModule
 from portfolio import portfolio
 from boardtest import testBoard
 from uploader import fileUploader
+import os
 
 class server:
     app = Flask(__name__)

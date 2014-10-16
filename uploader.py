@@ -21,7 +21,9 @@ class fileUploader:
         form = request.form
     # Create a unique "session ID" for this particular batch of uploads.
         upload_key = str(uuid4())
-
+    # Create if not exist UPLOAD_FOLDER
+        if(not os.path.isdir(defaultconfig.UPLOAD_FOLDER)):
+            os.mkdir(defaultconfig.UPLOAD_FOLDER)
     # Is the upload using Ajax, or a direct POST by the form?
         is_ajax = False
         if form.get("__ajax", None) == "true":

@@ -3,6 +3,7 @@ from models import *
 from DB import db_session
 from config import defaultconfig
 import hashlib
+import bcrypt
 class accountModule:
     
 
@@ -11,12 +12,12 @@ class accountModule:
     @accountModule.route('/join', methods=['POST', 'GET'])
     def joinUser():
         if(not request.method == 'POST'):
-            if(not session.get('logged_in')==None):
+            if(not session.get('logged_in') is None):
                 flash('User can not Re-join')
                 return redirect(url_for('index'))
             return render_template('join.jinja')
         else:
-            if(not session.get('logged_in')==None):
+            if(not session.get('logged_in') is None):
                 flash('User can not Re-join')
                 return redirect(url_for('index'))
             try:
@@ -25,8 +26,6 @@ class accountModule:
                     flash('Already exist E-Mail')
                     return render_template('join.jinja')
                 userPass = request.form['Password']
-                userPass = userPass+defaultconfig.SECRET_KEY
-                userPass = hashlib.sha512(userPass.encode()).hexdigest()
                 userName = request.form['name']
                 newuser = account(email=email, name=userName, passwd=userPass)
                 db_session.add(newuser)
@@ -43,9 +42,9 @@ class accountModule:
                 print(e)
             finally:
                 return redirect(url_for('index'))
-    @accountModule.route('/leave', methods = ['POST', 'GET'])
+    @accountModule.route('/leave', methods=['POST', 'GET'])
     def leave():
-        if(not session.get('logged_in')==None):
+        if(not session.get('logged_in') is None):
             try:
                 user = account.getUserInfo(email=session['userMail'])
                 db_session.delete(user)
@@ -69,18 +68,15 @@ class accountModule:
 
     @accountModule.route('/login', methods=['POST'])
     def login():
-        error = None
         if(request.method == 'POST'):
             userId = request.form['email']
             userPass = request.form['Password']
-            userPass = userPass+defaultconfig.SECRET_KEY
-            userPass = hashlib.sha512(userPass.encode()).hexdigest()
-            if(account.getValidLogin(email=userId, passwd=userPass)):
-                userInfo = account.getUserInfo(email=userId)
+            userInfoWithVailidation = account.getValidLogin(email=userId, passwd=userPass)
+            if(not userInfoWithVailidation is None):
                 session['logged_in'] = True
-                session['userSrl'] = userInfo.userSrl
-                session['userName'] = userInfo.name
-                session['userMail'] = userInfo.email
+                session['userSrl'] = userInfoWithVailidation.userSrl
+                session['userName'] = userInfoWithVailidation.name
+                session['userMail'] = userInfoWithVailidation.email
                 flash('Hello! '+session['userName'])
                 return redirect(request.referrer)
             else:
