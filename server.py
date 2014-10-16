@@ -36,7 +36,8 @@ class server:
     def index():
         return redirect(url_for('portfolio.index'))
 
-    
+    def __init__():
+        app.run()
 
     if(__name__=='__main__'):
         if(not os.path.exists(defaultconfig.DATABASE_ADD)):
@@ -46,4 +47,4 @@ class server:
                 newboard =board(board=boardAdding)
                 db_session.add(newboard)
                 db_session.commit()
-        app.run()
+        __init__()
