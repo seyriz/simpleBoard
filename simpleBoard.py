@@ -98,9 +98,7 @@ class simpleBoard:
             if(request.method == 'POST'):
                 try:
                     postInfo.title = request.form['Title']
-                    print(2)
-                    postInfo.text = request.form['Title']
-                    print(3)
+                    postInfo.text = request.form['Text']
                     db_session.add(postInfo)
                     db_session.commit()
                     return redirect(url_for(boardname+'.index'))
