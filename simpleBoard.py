@@ -73,7 +73,7 @@ class simpleBoard:
     @simpleBBS.route('/deletePost/<int:postSrl>')
     def deletePost(postSrl):
         postInfo = post.getPost(postSrl)
-        if(not session.get('logged_in') is None and session.get('userName') is postInfo.writer):
+        if(not session.get('logged_in') is None and session.get('userName') == postInfo.writer):
             try:
                 postName = postInfo.title
                 postFiles = postInfo.files
